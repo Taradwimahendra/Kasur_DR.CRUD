@@ -21,3 +21,11 @@ namespace CRUDMahasiswaADO
             string connection = $"Data Source={GetLocalIPAddress()};Initial Catalog=DBAkademikADO; User ID=sa;Password=Kadirojo7;";
             return connectionString;
         }
+
+        SqlConnection conn = new SqlConnection(connectionString);
+
+        SqlDataAdapter da;
+        DataTable dtMahasiswa;
+        DataTable dtProdi;
+
+       
