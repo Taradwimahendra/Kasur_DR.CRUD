@@ -105,3 +105,40 @@ namespace CRUDMahasiswaADO
                     chartProdi.Series.Add(s);
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal load data: " + ex.Message);
+            }
+
+            Title title = new Title("Jumlah Mahasiswa per Program Studi", Docking.Top, new Font("Arial", 14, FontStyle.Bold), Color.DarkBlue);
+            chartProdi.Titles.Add(title);
+            Legend legend = new Legend("MainLegend");
+            legend.Docking = Docking.Right;
+            chartProdi.Legends.Add(legend);
+        }
+
+        private void Dashboard_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnLoad_Click(object sender, EventArgs e)
+        {
+            button = 1;
+            loadDataChart();
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            button = 0;
+            loadDataChart();
+        }
+
+        private void btnDataMahasiswa_Click(object sender, EventArgs e)
+        {
+            Form1 frm1 = new Form1();
+            frm1.Show();
+            this.Hide();
+        }
+    }
+}
