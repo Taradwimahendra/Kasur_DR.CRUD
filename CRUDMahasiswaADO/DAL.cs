@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace CRUDMahasiswaADO
 {
-    internal class DAL
+    internal class DAL  
     {
 
         static string connectionString = "Data Source=TARA\\TARA;Initial Catalog=DBAkademikADO; User ID=sa;Password=Mahendradwitara";
@@ -27,7 +27,6 @@ namespace CRUDMahasiswaADO
         SqlDataAdapter da;
         DataTable dtMahasiswa;
         DataTable dtProdi;
-
 
         public static string GetLocalIPAddress()
         {
@@ -92,15 +91,13 @@ namespace CRUDMahasiswaADO
         public void InsertMhs(string nim, string nama, string alamat, string jenisKelamin, DateTime tanggalLahir, string kodeProdi, byte[] foto)
         {
             if (conn.State == ConnectionState.Closed)
-            {
                 conn.Open();
-            }
 
             SqlTransaction trans = conn.BeginTransaction();
 
             try
             {
-                SqlCommand command = new SqlCommand("sp_InsertMahasiswa", conn);
+                SqlCommand command = new SqlCommand("sp_InsertMahasiswa", conn, trans); // ← tambahkan trans di sini
                 command.CommandType = CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@PNIM", nim);
@@ -109,7 +106,8 @@ namespace CRUDMahasiswaADO
                 command.Parameters.AddWithValue("@PTanggalLahir", tanggalLahir);
                 command.Parameters.AddWithValue("@PJenisKelamin", jenisKelamin);
                 command.Parameters.AddWithValue("@PKodeProdi", kodeProdi);
-                command.Parameters.AddWithValue("@Pfoto", foto);
+                SqlParameter paramFoto = command.Parameters.Add("@PFoto", SqlDbType.VarBinary, -1);
+                paramFoto.Value = (object)foto ?? DBNull.Value;
 
                 command.ExecuteNonQuery();
                 trans.Commit();
@@ -117,6 +115,7 @@ namespace CRUDMahasiswaADO
             catch (Exception ex)
             {
                 trans.Rollback();
+                throw; // ← lempar ulang agar Form1 tahu ada error
             }
             finally
             {
@@ -208,6 +207,20 @@ namespace CRUDMahasiswaADO
             return dtMahasiswa;
         }
 
+        public void InsertLog(string message)
+        {
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand("sp_LogMessage", conn);
+
+            cmd.Parameters.AddWithValue("psn", message);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.ExecuteNonQuery();
+        }
+
         public DataTable getProdi()
         {
             if (conn.State == ConnectionState.Closed)
@@ -273,7 +286,7 @@ namespace CRUDMahasiswaADO
             da.Fill(dtMahasiswa);
             return dtMahasiswa;
         }
+
+
     }
 }
-
-
